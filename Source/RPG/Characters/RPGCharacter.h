@@ -36,7 +36,11 @@ private:
 	void Sheathe();
 	void Crouch();
 	void Attack();
+	void StartSprint();
+	void StopSprint();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		bool bIsInCombat;
+		bool bInCombat;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		bool bIsCrouching;
 };

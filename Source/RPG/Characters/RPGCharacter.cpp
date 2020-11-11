@@ -2,6 +2,7 @@
 
 
 #include "RPGCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -10,6 +11,7 @@ ARPGCharacter::ARPGCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 }
@@ -19,8 +21,11 @@ void ARPGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	bIsInCombat = false;
+	bInCombat = false;
+	bIsCrouching = false;
 	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 88.f);
 }
 
 // Called every frame
@@ -41,11 +46,14 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(TEXT("LookSideways"), this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Sheathe"), EInputEvent::IE_Pressed, this, &ARPGCharacter::Sheathe);
+	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ARPGCharacter::Crouch);
+	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ARPGCharacter::StartSprint);
+	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ARPGCharacter::StopSprint);
 }
 
 void ARPGCharacter::MoveForward(float AxisValue)
 {
-	if (bIsInCombat)
+	if (bInCombat)
 	{
 		AddMovementInput(GetActorForwardVector() * AxisValue);
 	}
@@ -60,7 +68,7 @@ void ARPGCharacter::MoveForward(float AxisValue)
 
 void ARPGCharacter::MoveSideways(float AxisValue)
 {
-	if (bIsInCombat)
+	if (bInCombat)
 	{
 		AddMovementInput(GetActorRightVector() * AxisValue);
 	}
@@ -75,14 +83,46 @@ void ARPGCharacter::MoveSideways(float AxisValue)
 
 void ARPGCharacter::Sheathe()
 {
-	if (bIsInCombat)
+	if (bInCombat)
 	{
-		bIsInCombat = false;
+		bInCombat = false;
 		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	}
-	else if (!bIsInCombat)
+	else if (!bInCombat)
 	{
-		bIsInCombat = true;
+		bInCombat = true;
 		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->MaxWalkSpeed = 395.f;
+	}
+}
+
+void ARPGCharacter::StartSprint()
+{
+	if (!bInCombat)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	}
+}
+
+void ARPGCharacter::StopSprint()
+{
+	if (!bInCombat)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
+}
+
+void ARPGCharacter::Crouch()
+{
+	if (bIsCrouching)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 70.f;
+		GetCapsuleComponent()->InitCapsuleSize(42.f, 55.f);
+	}
+	if (!bIsCrouching)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		GetCapsuleComponent()->InitCapsuleSize(42.f, 88.f);
 	}
 }
