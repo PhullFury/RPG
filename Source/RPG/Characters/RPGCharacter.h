@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "RPGCharacter.generated.h"
 
+class UCameraComponent;
+class USpringArmComponent;
 
 UCLASS()
 class RPG_API ARPGCharacter : public ACharacter
@@ -38,9 +40,14 @@ private:
 	void Attack();
 	void StartSprint();
 	void StopSprint();
+	void PJump();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bInCombat;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bIsCrouching;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		USpringArmComponent* SpringArm;
 };
