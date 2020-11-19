@@ -17,12 +17,15 @@ class RPG_API ARPGCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ARPGCharacter();
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		USpringArmComponent* SpringArm;
 
 
 protected:
@@ -41,13 +44,15 @@ private:
 	void StartSprint();
 	void StopSprint();
 	void PJump();
+	void ResetCombo();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bInCombat;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bIsCrouching;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		UCameraComponent* Camera;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		USpringArmComponent* SpringArm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float ComboTimer = 1.4f;
+
+	float AttackTimer;
+	int32 ComboCounter;
 };

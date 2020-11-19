@@ -20,9 +20,10 @@ ARPGCharacter::ARPGCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 500.f;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->SetRelativeTransform(SpringArmTransform);
+	SpringArm->TargetArmLength = 500.f;
+	SpringArm->SocketOffset.Y = 0.f;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -42,13 +43,16 @@ void ARPGCharacter::BeginPlay()
 	bIsCrouching = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 70.f;
+	ComboCounter = 1;
+	AttackTimer = 0.f;
 }
 
 // Called every frame
 void ARPGCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	ResetCombo();
 }
 
 // Called to bind functionality to input
@@ -65,6 +69,7 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ARPGCharacter::Crouch);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ARPGCharacter::StartSprint);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ARPGCharacter::StopSprint);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ARPGCharacter::Attack);
 }
 
 void ARPGCharacter::MoveForward(float AxisValue)
@@ -97,6 +102,28 @@ void ARPGCharacter::MoveSideways(float AxisValue)
 	}
 }
 
+void ARPGCharacter::Attack()
+{
+	if (ComboCounter == 1)
+	{
+		AttackTimer = GetWorld()->GetTimeSeconds();
+		ComboCounter = 2;
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 1"));
+	}
+	else if (ComboCounter == 2)
+	{
+		AttackTimer = GetWorld()->GetTimeSeconds();
+		ComboCounter = 3;
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 2"));
+	}
+	else if (ComboCounter == 3)
+	{
+		AttackTimer = GetWorld()->GetTimeSeconds();
+		ComboCounter = 1;
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 3"));
+	}
+}
+
 void ARPGCharacter::PJump()
 {
 	if(bIsCrouching)
@@ -117,7 +144,8 @@ void ARPGCharacter::Sheathe()
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		GetCharacterMovement()->JumpZVelocity = 600.f;
-		SpringArm->TargetArmLength = 500.f;
+		//SpringArm->TargetArmLength = 500.f;
+		//SpringArm->SocketOffset.Y = 0.f;
 	}
 	else if (!bInCombat)
 	{
@@ -125,7 +153,8 @@ void ARPGCharacter::Sheathe()
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 		GetCharacterMovement()->JumpZVelocity = 400.f;
-		SpringArm->TargetArmLength = 300.f;
+		//SpringArm->TargetArmLength = 300.f;
+		//SpringArm->SocketOffset.Y = 30.f;
 	}
 }
 
@@ -158,5 +187,13 @@ void ARPGCharacter::Crouch()
 		bIsCrouching = true;
 		GetCharacterMovement()->MaxWalkSpeed = 70.f;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 55.f);
+	}
+}
+
+void ARPGCharacter::ResetCombo()
+{
+	if (AttackTimer > ComboTimer)
+	{
+		ComboCounter = 1;
 	}
 }
