@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RPGCharacter.generated.h"
 
+class UAnimMontage;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -45,6 +46,7 @@ private:
 	void StopSprint();
 	void PJump();
 	void ResetCombo();
+	void AttackPerm();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bInCombat;
@@ -52,7 +54,17 @@ private:
 		bool bIsCrouching;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float ComboTimer = 1.4f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* Attack1Anim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* Attack2Anim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* Attack3Anim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+		UAnimMontage* Attack4Anim;
 
 	float AttackTimer;
 	int32 ComboCounter;
+	float AttackCoolDown;
+	bool bCanAttack;
 };

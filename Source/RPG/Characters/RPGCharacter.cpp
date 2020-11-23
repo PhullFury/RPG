@@ -45,6 +45,7 @@ void ARPGCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	ComboCounter = 1;
 	AttackTimer = 0.f;
+	bCanAttack = true;
 }
 
 // Called every frame
@@ -53,6 +54,7 @@ void ARPGCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ResetCombo();
+	AttackPerm();
 }
 
 // Called to bind functionality to input
@@ -104,24 +106,57 @@ void ARPGCharacter::MoveSideways(float AxisValue)
 
 void ARPGCharacter::Attack()
 {
-	if (ComboCounter == 1)
+	if (bInCombat && !GetCharacterMovement()->IsFalling())
 	{
-		AttackTimer = GetWorld()->GetTimeSeconds();
-		ComboCounter = 2;
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 1"));
-	}
-	else if (ComboCounter == 2)
-	{
-		AttackTimer = GetWorld()->GetTimeSeconds();
-		ComboCounter = 3;
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 2"));
-	}
-	else if (ComboCounter == 3)
-	{
-		AttackTimer = GetWorld()->GetTimeSeconds();
-		ComboCounter = 1;
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Attack 3"));
-	}
+		if (ComboCounter == 1 && bCanAttack)
+		{
+			AttackTimer = GetWorld()->GetTimeSeconds();
+			AttackCoolDown = GetWorld()->GetTimeSeconds();
+			ComboCounter = 2;
+			bCanAttack = false;
+			GetCharacterMovement()->MaxWalkSpeed = 0.f;
+			if (Attack1Anim != nullptr)
+			{
+				PlayAnimMontage(Attack1Anim);
+			}
+		}
+		else if (ComboCounter == 2 && bCanAttack)
+		{
+			AttackTimer = GetWorld()->GetTimeSeconds();
+			AttackCoolDown = GetWorld()->GetTimeSeconds();
+			ComboCounter = 3;
+			bCanAttack = false;
+			GetCharacterMovement()->MaxWalkSpeed = 0.f;
+			if (Attack2Anim != nullptr)
+			{
+				PlayAnimMontage(Attack2Anim);
+			}
+		}
+		else if (ComboCounter == 3 && bCanAttack)
+		{
+			AttackTimer = GetWorld()->GetTimeSeconds();
+			AttackCoolDown = GetWorld()->GetTimeSeconds();
+			ComboCounter = 4;
+			bCanAttack = false;
+			GetCharacterMovement()->MaxWalkSpeed = 0.f;
+			if (Attack3Anim != nullptr)
+			{
+				PlayAnimMontage(Attack3Anim);
+			}
+		}
+		else if (ComboCounter == 4 && bCanAttack)
+		{
+			AttackTimer = GetWorld()->GetTimeSeconds();
+			AttackCoolDown = GetWorld()->GetTimeSeconds();
+			ComboCounter = 1;
+			bCanAttack = false;
+			GetCharacterMovement()->MaxWalkSpeed = 0.f;
+			if (Attack4Anim != nullptr)
+			{
+				PlayAnimMontage(Attack4Anim);
+			}
+		}
+	}	
 }
 
 void ARPGCharacter::PJump()
@@ -192,8 +227,17 @@ void ARPGCharacter::Crouch()
 
 void ARPGCharacter::ResetCombo()
 {
-	if (AttackTimer > ComboTimer)
+	if (GetWorld()->GetTimeSeconds()-AttackTimer > ComboTimer)
 	{
 		ComboCounter = 1;
+	}
+}
+
+void ARPGCharacter::AttackPerm()
+{
+	if (GetWorld()->GetTimeSeconds() - AttackCoolDown >= 0.8)
+	{
+		bCanAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
 }
