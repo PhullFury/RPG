@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "RPG/Actors/SwordBase.h"
 
 // Sets default values
 ARPGCharacter::ARPGCharacter()
@@ -46,6 +47,19 @@ void ARPGCharacter::BeginPlay()
 	ComboCounter = 1;
 	AttackTimer = 0.f;
 	bCanAttack = true;
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	if (SheatheSwordBP != nullptr)
+	{
+		SheatheSword = GetWorld()->SpawnActor<ASwordBase>(SheatheSwordBP);
+		SheatheSword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("SheatheSocket"));
+		SheatheSword->SetOwner(this);
+	}	
+	if (AttackSwordBP != nullptr)
+	{
+		AttackSword = GetWorld()->SpawnActor<ASwordBase>(AttackSwordBP);
+		AttackSword->SetOwner(this);
+		AttackSword->Destroy();
+	}
 }
 
 // Called every frame
@@ -181,6 +195,13 @@ void ARPGCharacter::Sheathe()
 		GetCharacterMovement()->JumpZVelocity = 600.f;
 		//SpringArm->TargetArmLength = 500.f;
 		//SpringArm->SocketOffset.Y = 0.f;
+		AttackSword->Destroy();
+		if (SheatheSwordBP != nullptr)
+		{
+			SheatheSword = GetWorld()->SpawnActor<ASwordBase>(SheatheSwordBP);
+			SheatheSword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("SheatheSocket"));
+			SheatheSword->SetOwner(this);
+		}
 	}
 	else if (!bInCombat)
 	{
@@ -190,6 +211,13 @@ void ARPGCharacter::Sheathe()
 		GetCharacterMovement()->JumpZVelocity = 400.f;
 		//SpringArm->TargetArmLength = 300.f;
 		//SpringArm->SocketOffset.Y = 30.f;
+		SheatheSword->Destroy();
+		if (AttackSwordBP != nullptr)
+		{
+			AttackSword = GetWorld()->SpawnActor<ASwordBase>(AttackSwordBP);
+			AttackSword->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+			AttackSword->SetOwner(this);
+		}
 	}
 }
 
@@ -197,16 +225,16 @@ void ARPGCharacter::StartSprint()
 {
 	if (!bInCombat && !bIsCrouching)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 void ARPGCharacter::StopSprint()
 {
 	if (!bInCombat && !bIsCrouching)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	}
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
 void ARPGCharacter::Crouch()
