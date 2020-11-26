@@ -28,6 +28,12 @@ public:
 		UCameraComponent* Camera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		USpringArmComponent* SpringArm;
+	UFUNCTION(BlueprintPure)
+		bool GetInCombat();
+	UFUNCTION(BlueprintPure)
+		bool GetIsCrouching();
+	UFUNCTION(BlueprintPure)
+		ASwordBase* GetAttackSword();
 
 
 protected:
@@ -48,11 +54,8 @@ private:
 	void PJump();
 	void ResetCombo();
 	void AttackPerm();
+	void SetSpeed();
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		bool bInCombat;
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		bool bIsCrouching;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float ComboTimer = 1.4f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
@@ -76,4 +79,7 @@ private:
 	int32 ComboCounter;
 	float AttackCoolDown;
 	bool bCanAttack;
+	bool bInCombat;
+	bool bIsCrouching;
+	bool bIsSprinting;
 };

@@ -20,13 +20,16 @@ ASwordBase::ASwordBase()
 // Called when the game starts or when spawned
 void ASwordBase::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 // Called every frame
 void ASwordBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void ASwordBase::Attack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Attack"));
 }

@@ -69,6 +69,7 @@ void ARPGCharacter::Tick(float DeltaTime)
 
 	ResetCombo();
 	AttackPerm();
+	SetSpeed();
 }
 
 // Called to bind functionality to input
@@ -191,10 +192,8 @@ void ARPGCharacter::Sheathe()
 	{
 		bInCombat = false;
 		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		GetCharacterMovement()->JumpZVelocity = 600.f;
-		//SpringArm->TargetArmLength = 500.f;
-		//SpringArm->SocketOffset.Y = 0.f;
 		AttackSword->Destroy();
 		if (SheatheSwordBP != nullptr)
 		{
@@ -207,10 +206,8 @@ void ARPGCharacter::Sheathe()
 	{
 		bInCombat = true;
 		bUseControllerRotationYaw = true;
-		GetCharacterMovement()->MaxWalkSpeed = 395.f;
+		//GetCharacterMovement()->MaxWalkSpeed = 395.f;
 		GetCharacterMovement()->JumpZVelocity = 400.f;
-		//SpringArm->TargetArmLength = 300.f;
-		//SpringArm->SocketOffset.Y = 30.f;
 		SheatheSword->Destroy();
 		if (AttackSwordBP != nullptr)
 		{
@@ -225,16 +222,18 @@ void ARPGCharacter::StartSprint()
 {
 	if (!bInCombat && !bIsCrouching)
 	{
+		bIsSprinting = true;
+		//GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 void ARPGCharacter::StopSprint()
 {
 	if (!bInCombat && !bIsCrouching)
 	{
+		bIsSprinting = false;
+		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	}
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
 void ARPGCharacter::Crouch()
@@ -242,13 +241,13 @@ void ARPGCharacter::Crouch()
 	if (bIsCrouching)
 	{
 		bIsCrouching = false;
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 88.f);
 	}
 	else if (!bIsCrouching)
 	{
 		bIsCrouching = true;
-		GetCharacterMovement()->MaxWalkSpeed = 70.f;
+		//GetCharacterMovement()->MaxWalkSpeed = 70.f;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 55.f);
 	}
 }
@@ -268,4 +267,39 @@ void ARPGCharacter::AttackPerm()
 		bCanAttack = true;
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
+}
+
+bool ARPGCharacter::GetInCombat()
+{
+	return bInCombat;
+}
+
+bool ARPGCharacter::GetIsCrouching()
+{
+	return bIsCrouching;
+}
+
+void ARPGCharacter::SetSpeed()
+{
+	if (bIsCrouching)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 70.f;
+	}
+	else if (bInCombat)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 395.f;
+	}
+	else if (bIsSprinting)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	}
+}
+
+ASwordBase* ARPGCharacter::GetAttackSword()
+{
+	return AttackSword;
 }
