@@ -31,4 +31,10 @@ private:
 		USceneComponent* Root;
 	UPROPERTY(VisibleAnywhere)
 		USkeletalMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TraceParameters", meta = (AllowPrivateAccess = "true"))
+		float VectorEnd = 140.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TraceParameters", meta = (AllowPrivateAccess = "true"))
+		float CylinderRadius = 25.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "TraceParameters", meta = (AllowPrivateAccess = "true"))
+		float CylinderHeight;
 };

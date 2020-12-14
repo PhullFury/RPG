@@ -3,6 +3,7 @@
 
 #include "SwordBase.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 ASwordBase::ASwordBase()
@@ -32,4 +33,6 @@ void ASwordBase::Tick(float DeltaTime)
 void ASwordBase::Attack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Attack"));
+	FVector End = GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * VectorEnd;
+	UKismetSystemLibrary::DrawDebugCylinder(GetWorld(), GetOwner()->GetActorLocation(), End, CylinderRadius, 5, FLinearColor::Red, 2.f, 1.f);
 }
