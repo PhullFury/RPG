@@ -39,4 +39,10 @@ private:
 		float CylinderHeight = 70.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
 		float Damage = 35.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+		float CritMultiplier = 2.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+		int32 CritChance = 20;
+
+	float CritDamage;
 };

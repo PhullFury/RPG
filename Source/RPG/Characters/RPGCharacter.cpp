@@ -176,7 +176,11 @@ void ARPGCharacter::Attack()
 				PlayAnimMontage(Attack4Anim);
 			}
 		}
-	}	
+	}
+	else if (!bInCombat)
+	{
+		Sheathe();
+	}
 }
 
 void ARPGCharacter::PJump()

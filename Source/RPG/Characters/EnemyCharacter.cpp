@@ -24,12 +24,6 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
-void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
 float AEnemyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -39,7 +33,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const&
 
 	if (IsDead())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Me Dead"));
 		this->Destroy();
 	}
 

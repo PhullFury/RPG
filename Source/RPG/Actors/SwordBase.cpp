@@ -24,6 +24,7 @@ ASwordBase::ASwordBase()
 void ASwordBase::BeginPlay()
 {
 	Super::BeginPlay();	
+	CritDamage = Damage * CritMultiplier;
 }
 
 // Called every frame
@@ -44,16 +45,28 @@ void ASwordBase::Attack()
 
 	UKismetSystemLibrary::DrawDebugCylinder(GetWorld(), GetOwner()->GetActorLocation(), TraceEnd, CylinderRadius, 5, FLinearColor::Red, 2.f, 1.f);
 
-	bool bIsHit = GetWorld()->SweepMultiByChannel(TraceHitResults, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, TraceCylinder, TraceParams);
-
+	bool bIsHit = GetWorld()->SweepMultiByChannel(OUT TraceHitResults, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, TraceCylinder, TraceParams);
 	if (bIsHit)
 	{
 		FVector HitDirection = -GetOwner()->GetActorRotation().Vector();
 		for (FHitResult HitResult : TraceHitResults)
 		{
-			FPointDamageEvent HitEvent(Damage, HitResult, HitDirection, nullptr);
 			AActor* HitActor = HitResult.GetActor();
-			HitActor->TakeDamage(Damage, HitEvent, GetOwner()->GetInstigatorController(), this);
+			int32 CritRoll = FMath::RandRange(1, 100);
+			if (HitActor != nullptr)
+			{
+				if (CritRoll <= CritChance)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("That's a crit!!!"));
+					FPointDamageEvent CritEvent(CritDamage, HitResult, HitDirection, nullptr);
+					HitActor->TakeDamage(CritDamage, CritEvent, GetOwner()->GetInstigatorController(), this);
+				}
+				else
+				{
+					FPointDamageEvent HitEvent(Damage, HitResult, HitDirection, nullptr);
+					HitActor->TakeDamage(Damage, HitEvent, GetOwner()->GetInstigatorController(), this);
+				}
+			}
 		}
 	}
 }
