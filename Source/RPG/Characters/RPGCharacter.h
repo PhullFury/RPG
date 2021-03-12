@@ -34,6 +34,8 @@ public:
 		bool GetIsCrouching();
 	UFUNCTION(BlueprintPure)
 		ASwordBase* GetAttackSword();
+	UFUNCTION(BlueprintCallable)
+		void PAttack();
 
 
 protected:
@@ -82,4 +84,5 @@ private:
 	bool bInCombat;
 	bool bIsCrouching;
 	bool bIsSprinting;
+	bool bIsSwinging;
 };

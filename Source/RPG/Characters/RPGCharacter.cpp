@@ -42,6 +42,7 @@ void ARPGCharacter::BeginPlay()
 	
 	bInCombat = false;
 	bIsCrouching = false;
+	bIsSwinging = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	ComboCounter = 1;
@@ -129,6 +130,7 @@ void ARPGCharacter::Attack()
 			AttackCoolDown = GetWorld()->GetTimeSeconds();
 			ComboCounter = 2;
 			bCanAttack = false;
+			bIsSwinging = true;
 			GetCharacterMovement()->MaxWalkSpeed = 0.f;
 			if (Attack1Anim != nullptr)
 			{
@@ -141,6 +143,7 @@ void ARPGCharacter::Attack()
 			AttackCoolDown = GetWorld()->GetTimeSeconds();
 			ComboCounter = 3;
 			bCanAttack = false;
+			bIsSwinging = true;
 			GetCharacterMovement()->MaxWalkSpeed = 0.f;
 			if (Attack2Anim != nullptr)
 			{
@@ -153,6 +156,7 @@ void ARPGCharacter::Attack()
 			AttackCoolDown = GetWorld()->GetTimeSeconds();
 			ComboCounter = 4;
 			bCanAttack = false;
+			bIsSwinging = true;
 			GetCharacterMovement()->MaxWalkSpeed = 0.f;
 			if (Attack3Anim != nullptr)
 			{
@@ -165,6 +169,7 @@ void ARPGCharacter::Attack()
 			AttackCoolDown = GetWorld()->GetTimeSeconds();
 			ComboCounter = 1;
 			bCanAttack = false;
+			bIsSwinging = true;
 			GetCharacterMovement()->MaxWalkSpeed = 0.f;
 			if (Attack4Anim != nullptr)
 			{
@@ -188,11 +193,10 @@ void ARPGCharacter::PJump()
 
 void ARPGCharacter::Sheathe()
 {
-	if (bInCombat)
+	if (bInCombat && !bIsSwinging)
 	{
 		bInCombat = false;
 		bUseControllerRotationYaw = false;
-		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		GetCharacterMovement()->JumpZVelocity = 600.f;
 		AttackSword->Destroy();
 		if (SheatheSwordBP != nullptr)
@@ -206,7 +210,6 @@ void ARPGCharacter::Sheathe()
 	{
 		bInCombat = true;
 		bUseControllerRotationYaw = true;
-		//GetCharacterMovement()->MaxWalkSpeed = 395.f;
 		GetCharacterMovement()->JumpZVelocity = 400.f;
 		SheatheSword->Destroy();
 		if (AttackSwordBP != nullptr)
@@ -223,7 +226,6 @@ void ARPGCharacter::StartSprint()
 	if (!bInCombat && !bIsCrouching)
 	{
 		bIsSprinting = true;
-		//GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
 }
 
@@ -232,7 +234,6 @@ void ARPGCharacter::StopSprint()
 	if (!bInCombat && !bIsCrouching)
 	{
 		bIsSprinting = false;
-		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	}
 }
 
@@ -241,13 +242,11 @@ void ARPGCharacter::Crouch()
 	if (bIsCrouching)
 	{
 		bIsCrouching = false;
-		//GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 88.f);
 	}
 	else if (!bIsCrouching)
 	{
 		bIsCrouching = true;
-		//GetCharacterMovement()->MaxWalkSpeed = 70.f;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 55.f);
 	}
 }
@@ -265,6 +264,7 @@ void ARPGCharacter::AttackPerm()
 	if (GetWorld()->GetTimeSeconds() - AttackCoolDown >= 0.8)
 	{
 		bCanAttack = true;
+		bIsSwinging = false;
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
 }
@@ -281,7 +281,11 @@ bool ARPGCharacter::GetIsCrouching()
 
 void ARPGCharacter::SetSpeed()
 {
-	if (bIsCrouching)
+	if (bIsSwinging)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	}
+	else if (bIsCrouching)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 70.f;
 	}
@@ -302,4 +306,9 @@ void ARPGCharacter::SetSpeed()
 ASwordBase* ARPGCharacter::GetAttackSword()
 {
 	return AttackSword;
+}
+
+void ARPGCharacter::PAttack()
+{
+	AttackSword->Attack();
 }
