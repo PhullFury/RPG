@@ -126,55 +126,19 @@ void ARPGCharacter::Attack()
 	{
 		if (ComboCounter == 1 && bCanAttack)
 		{
-			AttackTimer = GetWorld()->GetTimeSeconds();
-			AttackCoolDown = GetWorld()->GetTimeSeconds();
-			ComboCounter = 2;
-			bCanAttack = false;
-			bIsSwinging = true;
-			GetCharacterMovement()->MaxWalkSpeed = 0.f;
-			if (Attack1Anim != nullptr)
-			{
-				PlayAnimMontage(Attack1Anim);
-			}
+			AttackStuff(2, Attack1Anim);
 		}
 		else if (ComboCounter == 2 && bCanAttack)
 		{
-			AttackTimer = GetWorld()->GetTimeSeconds();
-			AttackCoolDown = GetWorld()->GetTimeSeconds();
-			ComboCounter = 3;
-			bCanAttack = false;
-			bIsSwinging = true;
-			GetCharacterMovement()->MaxWalkSpeed = 0.f;
-			if (Attack2Anim != nullptr)
-			{
-				PlayAnimMontage(Attack2Anim);
-			}
+			AttackStuff(3, Attack2Anim);
 		}
 		else if (ComboCounter == 3 && bCanAttack)
 		{
-			AttackTimer = GetWorld()->GetTimeSeconds();
-			AttackCoolDown = GetWorld()->GetTimeSeconds();
-			ComboCounter = 4;
-			bCanAttack = false;
-			bIsSwinging = true;
-			GetCharacterMovement()->MaxWalkSpeed = 0.f;
-			if (Attack3Anim != nullptr)
-			{
-				PlayAnimMontage(Attack3Anim);
-			}
+			AttackStuff(4, Attack3Anim);
 		}
 		else if (ComboCounter == 4 && bCanAttack)
 		{
-			AttackTimer = GetWorld()->GetTimeSeconds();
-			AttackCoolDown = GetWorld()->GetTimeSeconds();
-			ComboCounter = 1;
-			bCanAttack = false;
-			bIsSwinging = true;
-			GetCharacterMovement()->MaxWalkSpeed = 0.f;
-			if (Attack4Anim != nullptr)
-			{
-				PlayAnimMontage(Attack4Anim);
-			}
+			AttackStuff(1, Attack4Anim);
 		}
 	}
 	else if (!bInCombat)
@@ -183,15 +147,34 @@ void ARPGCharacter::Attack()
 	}
 }
 
-void ARPGCharacter::PJump()
+void ARPGCharacter::ResetCombo()
 {
-	if(bIsCrouching)
+	if (GetWorld()->GetTimeSeconds() - AttackTimer > ComboTimer)
 	{
-		Crouch();
+		ComboCounter = 1;
 	}
-	else if (!bIsCrouching)
+}
+
+void ARPGCharacter::AttackPerm()
+{
+	if (GetWorld()->GetTimeSeconds() - AttackCoolDown >= 0.8)
 	{
-		Jump();
+		bCanAttack = true;
+		bIsSwinging = false;
+		GetCharacterMovement()->MaxWalkSpeed = 395.f;
+	}
+}
+
+void ARPGCharacter::AttackStuff(int32 NextCounter, UAnimMontage* AttackAnim)
+{
+	AttackTimer = GetWorld()->GetTimeSeconds();
+	AttackCoolDown = GetWorld()->GetTimeSeconds();
+	ComboCounter = NextCounter;
+	bCanAttack = false;
+	bIsSwinging = true;
+	if (AttackAnim != nullptr)
+	{
+		PlayAnimMontage(AttackAnim);
 	}
 }
 
@@ -225,6 +208,18 @@ void ARPGCharacter::Sheathe()
 	}
 }
 
+void ARPGCharacter::PJump()
+{
+	if (bIsCrouching)
+	{
+		Crouch();
+	}
+	else if (!bIsCrouching)
+	{
+		Jump();
+	}
+}
+
 void ARPGCharacter::StartSprint()
 {
 	if (!bInCombat && !bIsCrouching)
@@ -252,24 +247,6 @@ void ARPGCharacter::Crouch()
 	{
 		bIsCrouching = true;
 		GetCapsuleComponent()->InitCapsuleSize(42.f, 55.f);
-	}
-}
-
-void ARPGCharacter::ResetCombo()
-{
-	if (GetWorld()->GetTimeSeconds()-AttackTimer > ComboTimer)
-	{
-		ComboCounter = 1;
-	}
-}
-
-void ARPGCharacter::AttackPerm()
-{
-	if (GetWorld()->GetTimeSeconds() - AttackCoolDown >= 0.8)
-	{
-		bCanAttack = true;
-		bIsSwinging = false;
-		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
 }
 
