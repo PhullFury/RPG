@@ -43,8 +43,6 @@ void ASwordBase::Attack()
 	TraceParams.AddIgnoredActor(this);
 	TraceParams.AddIgnoredActor(this->GetOwner());
 
-	UKismetSystemLibrary::DrawDebugCylinder(GetWorld(), GetOwner()->GetActorLocation(), TraceEnd, CylinderRadius, 5, FLinearColor::Red, 2.f, 1.f);
-
 	bool bIsHit = GetWorld()->SweepMultiByChannel(OUT TraceHitResults, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, TraceCylinder, TraceParams);
 	if (bIsHit)
 	{

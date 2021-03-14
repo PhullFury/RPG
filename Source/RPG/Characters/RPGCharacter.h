@@ -57,9 +57,14 @@ private:
 	void ResetCombo();
 	void AttackPerm();
 	void SetSpeed();
+	void AttackStuff(int32 NextCounter, UAnimMontage* AttackAnim);
+	void StartZoom();
+	void StopZoom();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float ComboTimer = 1.4f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float AimSpeedReduc = 4.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
 		UAnimMontage* Attack1Anim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
@@ -85,4 +90,5 @@ private:
 	bool bIsCrouching;
 	bool bIsSprinting;
 	bool bIsSwinging;
+	bool bIsAiming;
 };
