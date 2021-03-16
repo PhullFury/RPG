@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RPGCharacter.generated.h"
 
+class AKunaiBase;
 class ASwordBase;
 class UAnimMontage;
 class UCameraComponent;
@@ -25,13 +26,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		UCameraComponent* Camera;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		USpringArmComponent* SpringArm;
+		bool bIsAiming;
 	UFUNCTION(BlueprintPure)
 		bool GetInCombat();
 	UFUNCTION(BlueprintPure)
 		bool GetIsCrouching();
+	UFUNCTION(BlueprintPure)
+		bool GetIsAiming();
 	UFUNCTION(BlueprintPure)
 		ASwordBase* GetAttackSword();
 	UFUNCTION(BlueprintCallable)
@@ -65,6 +66,8 @@ private:
 		float ComboTimer = 1.4f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float AimSpeedReduc = 4.f;
+	UPROPERTY(VisibleAnywhere, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		USceneComponent* KunaiSpawnPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
 		UAnimMontage* Attack1Anim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
@@ -77,10 +80,14 @@ private:
 		TSubclassOf<ASwordBase> AttackSwordBP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<ASwordBase> SheatheSwordBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AKunaiBase> KunaiBP;
 	UPROPERTY()
 		ASwordBase* AttackSword;
 	UPROPERTY()
 		ASwordBase* SheatheSword;
+	UPROPERTY()
+		AKunaiBase* Kunai;
 
 	float AttackTimer;
 	int32 ComboCounter;
@@ -90,5 +97,4 @@ private:
 	bool bIsCrouching;
 	bool bIsSprinting;
 	bool bIsSwinging;
-	bool bIsAiming;
 };

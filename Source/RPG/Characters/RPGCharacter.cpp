@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "RPG/Actors/KunaiBase.h"
 #include "RPG/Actors/SwordBase.h"
 
 // Sets default values
@@ -14,25 +15,12 @@ ARPGCharacter::ARPGCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FRotator SpringArmRotation(0, 0, 0);
-	FVector SpringArmLocation(-5, 0, 70);
-	FVector SpringArmScale(1, 1, 1);
-	FTransform SpringArmTransform(SpringArmRotation, SpringArmLocation, SpringArmScale);
-
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->SetRelativeTransform(SpringArmTransform);
-	SpringArm->TargetArmLength = 500.f;
-	SpringArm->SocketOffset.Y = 0.f;
-
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	Camera->bUsePawnControlRotation = false;
-
+	KunaiSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Kunai Spawn Point"));
+	KunaiSpawnPoint->SetupAttachment(GetMesh());
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
 }
 
 // Called when the game starts or when spawned
@@ -177,6 +165,13 @@ void ARPGCharacter::Attack()
 	else if (bIsAiming && !GetCharacterMovement()->IsFalling())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Throwing kunai"));
+		if (KunaiBP != nullptr)
+		{
+			FVector SpawnLocation = KunaiSpawnPoint->GetComponentLocation();
+			FRotator SpawnRotator = KunaiSpawnPoint->GetComponentRotation();
+			Kunai = GetWorld()->SpawnActor<AKunaiBase>(KunaiBP, SpawnLocation, this->GetViewRotation());
+			Kunai->SetOwner(this);
+		}
 	}
 }
 
@@ -211,21 +206,37 @@ void ARPGCharacter::AttackStuff(int32 NextCounter, UAnimMontage* AttackAnim)
 	}
 }
 
+ASwordBase* ARPGCharacter::GetAttackSword()
+{
+	return AttackSword;
+}
+
+void ARPGCharacter::PAttack()
+{
+	AttackSword->Attack();
+}
+
 void ARPGCharacter::StartZoom()
 {
-	bIsAiming = true;
-	bUseControllerRotationYaw = true;
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		bIsAiming = true;
+		bUseControllerRotationYaw = true;
+	}
 }
 
 void ARPGCharacter::StopZoom()
 {
-	bIsAiming = false;
-	bUseControllerRotationYaw = false;
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		bIsAiming = false;
+		bUseControllerRotationYaw = false;
+	}
 }
 
 void ARPGCharacter::Sheathe()
 {
-	if (bInCombat && !bIsSwinging)
+	if (bInCombat && !bIsSwinging && !bIsAiming)
 	{
 		bInCombat = false;
 		bUseControllerRotationYaw = false;
@@ -238,7 +249,7 @@ void ARPGCharacter::Sheathe()
 			SheatheSword->SetOwner(this);
 		}
 	}
-	else if (!bInCombat)
+	else if (!bInCombat && !bIsAiming)
 	{
 		bInCombat = true;
 		bUseControllerRotationYaw = true;
@@ -295,16 +306,6 @@ void ARPGCharacter::Crouch()
 	}
 }
 
-bool ARPGCharacter::GetInCombat()
-{
-	return bInCombat;
-}
-
-bool ARPGCharacter::GetIsCrouching()
-{
-	return bIsCrouching;
-}
-
 void ARPGCharacter::SetSpeed()
 {
 	if (bIsSwinging)
@@ -333,12 +334,17 @@ void ARPGCharacter::SetSpeed()
 	}
 }
 
-ASwordBase* ARPGCharacter::GetAttackSword()
+bool ARPGCharacter::GetInCombat()
 {
-	return AttackSword;
+	return bInCombat;
 }
 
-void ARPGCharacter::PAttack()
+bool ARPGCharacter::GetIsCrouching()
 {
-	AttackSword->Attack();
+	return bIsCrouching;
+}
+
+bool ARPGCharacter::GetIsAiming()
+{
+	return bIsAiming;
 }

@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "KunaiBase.generated.h"
 
+class UCapsuleComponent;
+class UStaticMeshComponent;
+class UProjectileMovementComponent;
+
 UCLASS()
 class RPG_API AKunaiBase : public AActor
 {
@@ -23,7 +27,20 @@ protected:
 
 private:	
 	UPROPERTY(VisibleAnywhere)
-		USceneComponent* Root;
-	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere)
+		UCapsuleComponent* Capsule;
+	UPROPERTY(VisibleAnywhere)
+		UProjectileMovementComponent* Movement;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float KunaiSpeed = 1500.f; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float KunaiLifeSpan = 3.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float KunaiFalloff = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float KunaiHeight = 3.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float KunaiRadius = 3.f;
 };
