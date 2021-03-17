@@ -34,6 +34,7 @@ void ARPGCharacter::BeginPlay()
 	bUseControllerRotationYaw = false;
 	bCanAttack = true;
 	bIsAiming = false;
+	bCanThrow = true;
 
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	ComboCounter = 1;
@@ -162,15 +163,16 @@ void ARPGCharacter::Attack()
 	{
 		Sheathe();
 	}
-	else if (bIsAiming && !GetCharacterMovement()->IsFalling())
+	else if (bIsAiming && !GetCharacterMovement()->IsFalling() && bCanThrow)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Throwing kunai"));
 		if (KunaiBP != nullptr)
 		{
 			FVector SpawnLocation = KunaiSpawnPoint->GetComponentLocation();
 			FRotator SpawnRotator = KunaiSpawnPoint->GetComponentRotation();
 			Kunai = GetWorld()->SpawnActor<AKunaiBase>(KunaiBP, SpawnLocation, this->GetViewRotation());
 			Kunai->SetOwner(this);
+			bCanThrow = false;
+			KunaiCoolDown = GetWorld()->GetTimeSeconds();
 		}
 	}
 }
@@ -190,6 +192,10 @@ void ARPGCharacter::AttackPerm()
 		bCanAttack = true;
 		bIsSwinging = false;
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
+	}
+	if (GetWorld()->GetTimeSeconds() - KunaiCoolDown >= 1.f)
+	{
+		bCanThrow = true;
 	}
 }
 

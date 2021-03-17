@@ -92,9 +92,11 @@ private:
 	float AttackTimer;
 	int32 ComboCounter;
 	float AttackCoolDown;
+	float KunaiCoolDown;
 	bool bCanAttack;
 	bool bInCombat;
 	bool bIsCrouching;
 	bool bIsSprinting;
 	bool bIsSwinging;
+	bool bCanThrow;
 };

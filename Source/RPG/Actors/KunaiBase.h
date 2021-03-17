@@ -43,4 +43,17 @@ private:
 		float KunaiHeight = 3.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float KunaiRadius = 3.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+		float Damage = 35.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+		float CritMultiplier = 3.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+		int32 CritChance = 40;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+		TSubclassOf<UDamageType> DamageType;
+
+	float CritDamage;
+
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

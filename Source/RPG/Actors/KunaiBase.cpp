@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AKunaiBase::AKunaiBase()
@@ -29,10 +30,37 @@ AKunaiBase::AKunaiBase()
 void AKunaiBase::BeginPlay()
 {
 	Super::BeginPlay();	
+
+	CritDamage = Damage * CritMultiplier;
+	Mesh->OnComponentHit.AddDynamic(this, &AKunaiBase::OnHit);
 }
 
 // Called every frame
 void AKunaiBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AKunaiBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this && OtherActor != GetOwner())
+	{
+		FVector HitDirection = -GetOwner()->GetActorRotation().Vector();
+		int32 CritRoll = FMath::RandRange(1, 100);
+		if (CritRoll <= CritChance)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("That's a crit!!!"));
+			/*AActor* Actor = Hit.GetActor();
+			FPointDamageEvent CritEvent(CritDamage, Hit, HitDirection, nullptr);
+			OtherActor->TakeDamage(CritDamage, CritEvent, GetOwner()->GetInstigatorController(), this);*/
+			UGameplayStatics::ApplyDamage(OtherActor, CritDamage, GetOwner()->GetInstigatorController(), this, DamageType);
+		}
+		else
+		{
+			/*AActor* Actor = Hit.GetActor();
+			FPointDamageEvent DamageEvent(Damage, Hit, HitDirection, nullptr);
+			OtherActor->TakeDamage(Damage, DamageEvent, GetOwner()->GetInstigatorController(), this);*/
+			UGameplayStatics::ApplyDamage(OtherActor, Damage, GetOwner()->GetInstigatorController(), this, DamageType);
+		}
+	}
 }
