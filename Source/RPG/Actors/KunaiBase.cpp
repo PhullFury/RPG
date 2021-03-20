@@ -9,15 +9,16 @@
 // Sets default values
 AKunaiBase::AKunaiBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collsion Component"));
-	Capsule->SetCapsuleHalfHeight(KunaiHeight/2);
+	Capsule->SetCapsuleHalfHeight(KunaiHeight / 2);
 	Capsule->SetCapsuleRadius(KunaiRadius);
 	SetRootComponent(Capsule);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->OnComponentHit.AddDynamic(this, &AKunaiBase::OnHit);
 	Mesh->SetupAttachment(Capsule);
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
@@ -29,10 +30,9 @@ AKunaiBase::AKunaiBase()
 // Called when the game starts or when spawned
 void AKunaiBase::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 
 	CritDamage = Damage * CritMultiplier;
-	Mesh->OnComponentHit.AddDynamic(this, &AKunaiBase::OnHit);
 }
 
 // Called every frame
@@ -47,6 +47,7 @@ void AKunaiBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 	{
 		FVector HitDirection = -GetOwner()->GetActorRotation().Vector();
 		int32 CritRoll = FMath::RandRange(1, 100);
+		UE_LOG(LogTemp, Warning, TEXT("It hit"));
 		if (CritRoll <= CritChance)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("That's a crit!!!"));

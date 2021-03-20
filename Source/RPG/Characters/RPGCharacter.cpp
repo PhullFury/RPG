@@ -33,8 +33,8 @@ void ARPGCharacter::BeginPlay()
 	bIsSwinging = false;
 	bUseControllerRotationYaw = false;
 	bCanAttack = true;
-	bIsAiming = false;
-	bCanThrow = true;
+	/*bIsAiming = false;
+	bCanThrow = true;*/
 
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	ComboCounter = 1;
@@ -80,8 +80,8 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ARPGCharacter::StartSprint);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ARPGCharacter::StopSprint);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ARPGCharacter::Attack);
-	PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Pressed, this, &ARPGCharacter::StartZoom);
-	PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Released, this, &ARPGCharacter::StopZoom);
+	//PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Pressed, this, &ARPGCharacter::StartZoom);
+	//PlayerInputComponent->BindAction(TEXT("Zoom"), EInputEvent::IE_Released, this, &ARPGCharacter::StopZoom);
 }
 
 void ARPGCharacter::MoveForward(float AxisValue)
@@ -163,7 +163,7 @@ void ARPGCharacter::Attack()
 	{
 		Sheathe();
 	}
-	else if (bIsAiming && !GetCharacterMovement()->IsFalling() && bCanThrow)
+	/*else if (bIsAiming && !GetCharacterMovement()->IsFalling() && bCanThrow)
 	{
 		if (KunaiBP != nullptr)
 		{
@@ -174,7 +174,7 @@ void ARPGCharacter::Attack()
 			bCanThrow = false;
 			KunaiCoolDown = GetWorld()->GetTimeSeconds();
 		}
-	}
+	}*/
 }
 
 void ARPGCharacter::ResetCombo()
@@ -193,10 +193,10 @@ void ARPGCharacter::AttackPerm()
 		bIsSwinging = false;
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
-	if (GetWorld()->GetTimeSeconds() - KunaiCoolDown >= 1.f)
+	/*if (GetWorld()->GetTimeSeconds() - KunaiCoolDown >= 1.f)
 	{
 		bCanThrow = true;
-	}
+	}*/
 }
 
 void ARPGCharacter::AttackStuff(int32 NextCounter, UAnimMontage* AttackAnim)
@@ -222,7 +222,7 @@ void ARPGCharacter::PAttack()
 	AttackSword->Attack();
 }
 
-void ARPGCharacter::StartZoom()
+/*void ARPGCharacter::StartZoom()
 {
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -238,11 +238,11 @@ void ARPGCharacter::StopZoom()
 		bIsAiming = false;
 		bUseControllerRotationYaw = false;
 	}
-}
+}*/
 
 void ARPGCharacter::Sheathe()
 {
-	if (bInCombat && !bIsSwinging && !bIsAiming)
+	if (bInCombat && !bIsSwinging/* && !bIsAiming*/)
 	{
 		bInCombat = false;
 		bUseControllerRotationYaw = false;
@@ -255,7 +255,7 @@ void ARPGCharacter::Sheathe()
 			SheatheSword->SetOwner(this);
 		}
 	}
-	else if (!bInCombat && !bIsAiming)
+	else if (!bInCombat/* && !bIsAiming*/)
 	{
 		bInCombat = true;
 		bUseControllerRotationYaw = true;
@@ -284,7 +284,7 @@ void ARPGCharacter::PJump()
 
 void ARPGCharacter::StartSprint()
 {
-	if (!bInCombat && !bIsCrouching && !bIsAiming)
+	if (!bInCombat && !bIsCrouching/* && !bIsAiming*/)
 	{
 		bIsSprinting = true;
 	}
@@ -292,7 +292,7 @@ void ARPGCharacter::StartSprint()
 
 void ARPGCharacter::StopSprint()
 {
-	if (!bInCombat && !bIsCrouching && !bIsAiming)
+	if (!bInCombat && !bIsCrouching/* && !bIsAiming*/)
 	{
 		bIsSprinting = false;
 	}
@@ -329,11 +329,11 @@ void ARPGCharacter::SetSpeed()
 	else if (bIsSprinting && !bIsAiming)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	}
+	}/*
 	else if (bIsAiming)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 100.f;
-	}
+	}*/
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
@@ -350,7 +350,7 @@ bool ARPGCharacter::GetIsCrouching()
 	return bIsCrouching;
 }
 
-bool ARPGCharacter::GetIsAiming()
+/*bool ARPGCharacter::GetIsAiming()
 {
 	return bIsAiming;
-}
+}*/
