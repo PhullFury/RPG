@@ -33,6 +33,7 @@ void ARPGCharacter::BeginPlay()
 	bIsSwinging = false;
 	bUseControllerRotationYaw = false;
 	bCanAttack = true;
+	Health = MaxHealth;
 	/*bIsAiming = false;
 	bCanThrow = true;*/
 
@@ -116,31 +117,31 @@ void ARPGCharacter::MoveSideways(float AxisValue)
 
 void ARPGCharacter::LookUp(float AxisValue)
 {
-	if (bIsAiming)
+	/*if (bIsAiming)
 	{
 		this->AddControllerPitchInput(AxisValue/AimSpeedReduc);
 	}
 	else
 	{
-		this->AddControllerPitchInput(AxisValue);
-	}
+	}*/
+	this->AddControllerPitchInput(AxisValue);
 }
 
 void ARPGCharacter::LookSideways(float AxisValue)
 {
-	if (bIsAiming)
+	/*if (bIsAiming)
 	{
 		this->AddControllerYawInput(AxisValue/AimSpeedReduc);
 	}
 	else
 	{
-		this->AddControllerYawInput(AxisValue);
-	}
+	}*/
+	this->AddControllerYawInput(AxisValue);
 }
 
 void ARPGCharacter::Attack()
 {
-	if (bInCombat && !bIsAiming && !GetCharacterMovement()->IsFalling())
+	if (bInCombat/* && !bIsAiming*/ && !GetCharacterMovement()->IsFalling())
 	{
 		if (ComboCounter == 1 && bCanAttack)
 		{
@@ -159,7 +160,7 @@ void ARPGCharacter::Attack()
 			AttackStuff(1, Attack4Anim);
 		}
 	}
-	else if (!bInCombat && !bIsAiming)
+	else if (!bInCombat/* && !bIsAiming*/)
 	{
 		Sheathe();
 	}
@@ -326,7 +327,7 @@ void ARPGCharacter::SetSpeed()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 395.f;
 	}
-	else if (bIsSprinting && !bIsAiming)
+	else if (bIsSprinting/* && !bIsAiming*/)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}/*
@@ -348,6 +349,11 @@ bool ARPGCharacter::GetInCombat()
 bool ARPGCharacter::GetIsCrouching()
 {
 	return bIsCrouching;
+}
+
+float ARPGCharacter::GetHealth()
+{
+	return Health / MaxHealth;
 }
 
 /*bool ARPGCharacter::GetIsAiming()

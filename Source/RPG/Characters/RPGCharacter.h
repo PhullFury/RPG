@@ -25,16 +25,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		bool bIsAiming;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		bool bIsAiming;*/
 	UFUNCTION(BlueprintPure)
 		bool GetInCombat();
 	UFUNCTION(BlueprintPure)
 		bool GetIsCrouching();
-	UFUNCTION(BlueprintPure)
-		bool GetIsAiming();
+	/*UFUNCTION(BlueprintPure)
+		bool GetIsAiming();*/
 	UFUNCTION(BlueprintPure)
 		ASwordBase* GetAttackSword();
+	UFUNCTION(BlueprintPure)
+		float GetHealth();
 	UFUNCTION(BlueprintCallable)
 		void PAttack();
 
@@ -59,13 +61,15 @@ private:
 	void AttackPerm();
 	void SetSpeed();
 	void AttackStuff(int32 NextCounter, UAnimMontage* AttackAnim);
-	void StartZoom();
-	void StopZoom();
+	/*void StartZoom();
+	void StopZoom();*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float ComboTimer = 1.4f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float AimSpeedReduc = 4.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		float MaxHealth = 100.f;
 	UPROPERTY(VisibleAnywhere, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		USceneComponent* KunaiSpawnPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
@@ -80,23 +84,24 @@ private:
 		TSubclassOf<ASwordBase> AttackSwordBP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<ASwordBase> SheatheSwordBP;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<AKunaiBase> KunaiBP;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AKunaiBase> KunaiBP;*/
 	UPROPERTY()
 		ASwordBase* AttackSword;
 	UPROPERTY()
 		ASwordBase* SheatheSword;
-	UPROPERTY()
-		AKunaiBase* Kunai;
+	/*UPROPERTY()
+		AKunaiBase* Kunai;*/
 
 	float AttackTimer;
 	int32 ComboCounter;
 	float AttackCoolDown;
 	float KunaiCoolDown;
+	float Health;
 	bool bCanAttack;
 	bool bInCombat;
 	bool bIsCrouching;
 	bool bIsSprinting;
 	bool bIsSwinging;
-	bool bCanThrow;
+	//bool bCanThrow;
 };
